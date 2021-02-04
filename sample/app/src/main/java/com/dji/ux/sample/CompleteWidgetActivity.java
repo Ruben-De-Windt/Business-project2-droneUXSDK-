@@ -63,7 +63,7 @@ public class CompleteWidgetActivity extends Activity {
         deviceWidth = outPoint.x;
 
         mapWidget = findViewById(R.id.map_widget);
-        mapWidget.initAMap(new MapWidget.OnMapReadyListener() {
+        mapWidget.initGoogleMap(new MapWidget.OnMapReadyListener() {
             @Override
             public void onMapReady(@NonNull DJIMap map) {
                 map.setOnMapClickListener(new DJIMap.OnMapClickListener() {
