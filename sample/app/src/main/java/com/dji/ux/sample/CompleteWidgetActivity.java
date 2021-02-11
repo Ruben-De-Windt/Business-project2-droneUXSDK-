@@ -12,6 +12,8 @@ import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -22,7 +24,11 @@ import com.dji.mapkit.core.models.DJILatLng;
 import dji.common.airlink.PhysicalSource;
 import dji.keysdk.CameraKey;
 import dji.keysdk.KeyManager;
+import dji.sdk.base.BaseProduct;
 import dji.sdk.camera.VideoFeeder;
+import dji.sdk.flightcontroller.FlightController;
+import dji.sdk.products.Aircraft;
+import dji.sdk.sdkmanager.DJISDKManager;
 import dji.ux.widget.FPVWidget;
 import dji.ux.widget.MapWidget;
 import dji.ux.widget.controls.CameraControlsWidget;
@@ -45,6 +51,8 @@ public class CompleteWidgetActivity extends Activity {
     private int margin;
     private int deviceWidth;
     private int deviceHeight;
+
+    BaseProduct mProduct = DJISDKManager.getInstance().getProduct();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +111,11 @@ public class CompleteWidgetActivity extends Activity {
                     .addVideoActiveStatusListener(isActive ->
                             runOnUiThread(() -> updateSecondaryVideoVisibility(isActive)));
         }
+        while(mProduct.isConnected()){
+            GetHeading();
+        }
+
+
     }
 
     private void onViewClick(View view) {
@@ -256,6 +269,62 @@ public class CompleteWidgetActivity extends Activity {
             p.rightMargin = mMargin;
             p.bottomMargin = mMargin;
             mView.requestLayout();
+        }
+    }
+
+    private void GetHeading()
+    {
+        TextView infoHeading = findViewById(R.id.txtHeading);
+        infoHeading.setText("");
+
+        Aircraft aircraft = (Aircraft) mProduct;
+        if (mProduct == null || !mProduct.isConnected()) {
+            Toast toast = Toast.makeText(getApplicationContext(),mProduct+"<-- mProduct",Toast.LENGTH_LONG);
+            toast.show();
+            infoHeading.setText("Premade Value: 125°");
+        }
+        else{
+            FlightController flightController = aircraft.getFlightController();
+            // float range[-180 -> 180] (True North is 0°/ Positive is East/ Negative is West)
+            String text = flightController.getCompass().getHeading()+"°";
+            String Cardinal = "";
+            int Degrees= (int) flightController.getCompass().getHeading();
+
+            if(1<=Degrees && Degrees<=89)
+            {
+                Cardinal= "NE";
+            }
+            if(-1>=Degrees && Degrees>=-90)
+            {
+                Cardinal= "NW";
+            }
+            if(91<=Degrees && Degrees<=179)
+            {
+                Cardinal= "SE";
+            }
+            if(-179<=Degrees && Degrees<=-91)
+            {
+                Cardinal= "SW";
+            }
+            if(Degrees==0)
+            {
+                Cardinal= "N";
+            }
+            if(Degrees==90)
+            {
+                Cardinal= "E";
+            }
+            if(Degrees==-90)
+            {
+                Cardinal= "W";
+            }
+            if(Degrees==180 ||Degrees==-180 )
+            {
+                Cardinal= "S";
+            }
+            Toast toast = Toast.makeText(getApplicationContext(),Cardinal,Toast.LENGTH_LONG);
+            toast.show();
+            infoHeading.setText(text);
         }
     }
 }

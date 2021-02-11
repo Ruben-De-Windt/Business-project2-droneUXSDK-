@@ -9,6 +9,16 @@
     tools:context=".MainActivity">
 
     <!-- Widget to see first person view (FPV) -->
+    <TextView
+        android:id="@+id/txtHeading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="50dp"
+        android:layout_marginBottom="115dp"
+        android:text="hello_World" />
+
     <RelativeLayout
         android:id="@+id/fpv_container"
         android:layout_width="match_parent"
