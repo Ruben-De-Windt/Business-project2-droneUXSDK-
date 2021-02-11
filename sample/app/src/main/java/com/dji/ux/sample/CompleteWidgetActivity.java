@@ -23,6 +23,7 @@ import com.dji.mapkit.core.models.DJILatLng;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import dji.common.airlink.PhysicalSource;
 import dji.keysdk.CameraKey;
@@ -56,6 +57,7 @@ public class CompleteWidgetActivity extends Activity {
     private int deviceWidth;
     private int deviceHeight;
 
+
     BaseProduct mProduct = DJISDKManager.getInstance().getProduct();
 
     @Override
@@ -63,7 +65,7 @@ public class CompleteWidgetActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_default_widgets);
 
-        Timer timer = new Timer();
+       // Timer timer = new Timer();
 
         height = DensityUtil.dip2px(this, 100);
         width = DensityUtil.dip2px(this, 150);
@@ -119,13 +121,39 @@ public class CompleteWidgetActivity extends Activity {
         }
 
 
-
+/*
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 GetHeading();
             }
         }, 1000, 1000);
+
+ */
+/*
+        long lastTime = System.nanoTime();
+        double amountOfTicks= 60;
+        double ns = 1000000000;
+        double delta = 0;
+        while(true) {
+            long now = System.nanoTime();
+            delta+= (now-lastTime)/ns/amountOfTicks;
+            lastTime=now;
+            while (delta>=1){
+                delta--;
+            }
+            if(true){
+
+                GetHeading();
+            }
+
+        }
+*/
+
+        GetHeading();
+
+
+
 
 
 
@@ -190,7 +218,7 @@ public class CompleteWidgetActivity extends Activity {
     private void updateSecondaryVideoVisibility(boolean isActive) {
         if (isActive) {
             secondaryVideoView.setVisibility(View.VISIBLE);
-            GetHeading();
+
         } else {
             secondaryVideoView.setVisibility(View.GONE);
         }
@@ -288,69 +316,73 @@ public class CompleteWidgetActivity extends Activity {
         }
     }
 
-    private void GetHeading()
-    {
-        TextView infoHeading = findViewById(R.id.txtHeading);
-        infoHeading.setText("");
 
-        Aircraft aircraft = (Aircraft) mProduct;
-        if (mProduct == null || !mProduct.isConnected()) {
-            Toast toast = Toast.makeText(getApplicationContext(),mProduct+"<-- mProduct",Toast.LENGTH_LONG);
-            toast.show();
-            infoHeading.setText("Premade Value: 125°");
-        }
-        else{
-            FlightController flightController = aircraft.getFlightController();
-            // float range[-180 -> 180] (True North is 0°/ Positive is East/ Negative is West)
-            String text = flightController.getCompass().getHeading()+"°";
-            String Cardinal = "";
-            int Degrees= (int) flightController.getCompass().getHeading();
 
-            if(1<=Degrees && Degrees<=89)
-            {
-                Cardinal= "NE";
 
+
+        public void GetHeading(){
+            TextView infoHeading = findViewById(R.id.txtHeading);
+            infoHeading.setText("");
+
+            Aircraft aircraft = (Aircraft) mProduct;
+            if (mProduct == null || !mProduct.isConnected()) {
+                Toast toast = Toast.makeText(getApplicationContext(),mProduct+"<-- mProduct",Toast.LENGTH_LONG);
+                toast.show();
+                infoHeading.setText("Premade Value: 125°");
             }
-            if(-1>=Degrees && Degrees>=-90)
-            {
-                Cardinal= "NW";
+            else{
+                FlightController flightController = aircraft.getFlightController();
+                // float range[-180 -> 180] (True North is 0°/ Positive is East/ Negative is West)
+                String text = flightController.getCompass().getHeading()+"°";
+                String Cardinal = "";
+                int Degrees= (int) flightController.getCompass().getHeading();
 
-            }
-            if(91<=Degrees && Degrees<=179)
-            {
-                Cardinal= "SE";
+                if(1<=Degrees && Degrees<=89)
+                {
+                    Cardinal= "NE";
 
-            }
-            if(-179<=Degrees && Degrees<=-91)
-            {
-                Cardinal= "SW";
+                }
+                if(-1>=Degrees && Degrees>=-90)
+                {
+                    Cardinal= "NW";
 
-            }
-            if(Degrees==0)
-            {
-                Cardinal= "N";
+                }
+                if(91<=Degrees && Degrees<=179)
+                {
+                    Cardinal= "SE";
 
-            }
-            if(Degrees==90)
-            {
-                Cardinal= "E";
+                }
+                if(-179<=Degrees && Degrees<=-91)
+                {
+                    Cardinal= "SW";
 
-            }
-            if(Degrees==-90)
-            {
-                Cardinal= "W";
+                }
+                if(Degrees==0)
+                {
+                    Cardinal= "N";
 
-            }
-            if(Degrees==180 ||Degrees==-180 )
-            {
-                Cardinal= "S";
+                }
+                if(Degrees==90)
+                {
+                    Cardinal= "E";
 
+                }
+                if(Degrees==-90)
+                {
+                    Cardinal= "W";
+
+                }
+                if(Degrees==180 ||Degrees==-180 )
+                {
+                    Cardinal= "S";
+
+                }
+                Toast toast = Toast.makeText(getApplicationContext(),Cardinal,Toast.LENGTH_LONG);
+                toast.show();
+                infoHeading.setText(text);
             }
-            Toast toast = Toast.makeText(getApplicationContext(),Cardinal,Toast.LENGTH_LONG);
-            toast.show();
-            infoHeading.setText(text);
         }
     }
 
 
-}
+
