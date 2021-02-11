@@ -47,7 +47,7 @@ import dji.sdk.sdkmanager.DJISDKManager;
 import dji.sdk.useraccount.UserAccountManager;
 
 /** Main activity that displays three choices to user */
-public class MainActivity extends Activity implements View.OnClickListener, PopupMenu.OnMenuItemClickListener {
+public class MainActivity extends Activity implements View.OnClickListener {
     private static final String TAG = "MainActivity";
     private static final String LAST_USED_BRIDGE_IP = "bridgeip";
     private AtomicBoolean isRegistrationInProgress = new AtomicBoolean(false);
@@ -156,8 +156,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Popu
         setContentView(R.layout.activity_main);
         isAppStarted = true;
         findViewById(R.id.complete_ui_widgets).setOnClickListener(this);
-        findViewById(R.id.bt_customized_ui_widgets).setOnClickListener(this);
-        findViewById(R.id.bt_map_widget).setOnClickListener(this);
+
         TextView versionText = (TextView) findViewById(R.id.version);
         versionText.setText(getResources().getString(R.string.sdk_version, DJISDKManager.getInstance().getSDKVersion()));
         bridgeModeEditText = (EditText) findViewById(R.id.edittext_bridge_ip);
@@ -274,47 +273,14 @@ public class MainActivity extends Activity implements View.OnClickListener, Popu
         int id = view.getId();
         if (id == R.id.complete_ui_widgets) {
             nextActivityClass = CompleteWidgetActivity.class;
-        } else if (id == R.id.bt_customized_ui_widgets) {
-            nextActivityClass = CustomizedWidgetsActivity.class;
-        } else {
-            //nextActivityClass = MapWidgetActivity.class;
-            PopupMenu popup = new PopupMenu(this, view);
-            popup.setOnMenuItemClickListener(this);
-            Menu popupMenu = popup.getMenu();
-            MenuInflater inflater = popup.getMenuInflater();
-            inflater.inflate(R.menu.map_select_menu, popupMenu);
-            popupMenu.findItem(R.id.here_map).setEnabled(isHereMapsSupported());
-            popupMenu.findItem(R.id.google_map).setEnabled(isGoogleMapsSupported(this));
-            popup.show();
-            return;
-        }
 
-        Intent intent = new Intent(this, nextActivityClass);
-        startActivity(intent);
+
+            Intent intent = new Intent(this, nextActivityClass);
+            startActivity(intent);
+        }
     }
 
-    @Override
-    public boolean onMenuItemClick(MenuItem menuItem) {
-        Intent intent = new Intent(this, MapWidgetActivity.class);
-        int mapBrand = 0;
-        switch (menuItem.getItemId()) {
-            case R.id.here_map:
-                mapBrand = 0;
-                break;
-            case R.id.google_map:
-                mapBrand = 1;
-                break;
-            case R.id.amap:
-                mapBrand = 2;
-                break;
-            case R.id.mapbox:
-                mapBrand = 3;
-                break;
-        }
-        intent.putExtra(MapWidgetActivity.MAP_PROVIDER, mapBrand);
-        startActivity(intent);
-        return false;
-    }
+
 
     public static boolean isHereMapsSupported() {
         String abi;
