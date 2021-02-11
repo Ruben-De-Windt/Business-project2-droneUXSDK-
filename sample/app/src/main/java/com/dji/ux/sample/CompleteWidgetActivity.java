@@ -21,6 +21,9 @@ import com.dji.ux.sample.R;
 import com.dji.mapkit.core.maps.DJIMap;
 import com.dji.mapkit.core.models.DJILatLng;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import dji.common.airlink.PhysicalSource;
 import dji.keysdk.CameraKey;
 import dji.keysdk.KeyManager;
@@ -46,6 +49,7 @@ public class CompleteWidgetActivity extends Activity {
     private FrameLayout secondaryVideoView;
     private boolean isMapMini = true;
 
+
     private int height;
     private int width;
     private int margin;
@@ -58,6 +62,8 @@ public class CompleteWidgetActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_default_widgets);
+
+        Timer timer = new Timer();
 
         height = DensityUtil.dip2px(this, 100);
         width = DensityUtil.dip2px(this, 150);
@@ -111,9 +117,18 @@ public class CompleteWidgetActivity extends Activity {
                     .addVideoActiveStatusListener(isActive ->
                             runOnUiThread(() -> updateSecondaryVideoVisibility(isActive)));
         }
-        while(mProduct.isConnected()){
-            GetHeading();
-        }
+
+
+
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                GetHeading();
+            }
+        }, 1000, 1000);
+
+
+
 
 
     }
@@ -175,6 +190,7 @@ public class CompleteWidgetActivity extends Activity {
     private void updateSecondaryVideoVisibility(boolean isActive) {
         if (isActive) {
             secondaryVideoView.setVisibility(View.VISIBLE);
+            GetHeading();
         } else {
             secondaryVideoView.setVisibility(View.GONE);
         }
@@ -293,38 +309,48 @@ public class CompleteWidgetActivity extends Activity {
             if(1<=Degrees && Degrees<=89)
             {
                 Cardinal= "NE";
+
             }
             if(-1>=Degrees && Degrees>=-90)
             {
                 Cardinal= "NW";
+
             }
             if(91<=Degrees && Degrees<=179)
             {
                 Cardinal= "SE";
+
             }
             if(-179<=Degrees && Degrees<=-91)
             {
                 Cardinal= "SW";
+
             }
             if(Degrees==0)
             {
                 Cardinal= "N";
+
             }
             if(Degrees==90)
             {
                 Cardinal= "E";
+
             }
             if(Degrees==-90)
             {
                 Cardinal= "W";
+
             }
             if(Degrees==180 ||Degrees==-180 )
             {
                 Cardinal= "S";
+
             }
             Toast toast = Toast.makeText(getApplicationContext(),Cardinal,Toast.LENGTH_LONG);
             toast.show();
             infoHeading.setText(text);
         }
     }
+
+
 }
